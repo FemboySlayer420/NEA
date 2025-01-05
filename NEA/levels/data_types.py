@@ -10,8 +10,10 @@ class BSPNode:
     def __init__(self):
         #
         self.front: BSPNode = None
-        self.front: BSPNode = None
+        self.back: BSPNode = None
         #
         self.splitter_p0: vec2 = None
         self.splitter_p1: vec2 = None
         self.splitter_vec: vec2 = None
+        #
+        self.segments_id: int = None

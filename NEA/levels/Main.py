@@ -2,10 +2,10 @@ from settings import *
 from Engine import Engine
 
 class App:
-    ray.init_window(WIN_WIDTH, WIN_HEIGHT, 'BSP Engine')
+    ray.init_window(WIN_WIDTH, WIN_HEIGHT, 'GAME')
     
     def __init__(self):
-        self.dt = 0.0
+        self.dt = 1/60
         self.engine = Engine(app=self)
     
     def run(self):
