@@ -3,7 +3,7 @@ from settings2 import *
 def cross_2d(v0: vec2, v1: vec2):
     return v0.x * v1.y - v1.x * v0.y
 
-def is_on_front(v0: vec2, v1: vec2):
+def is_on_front(v0: vec2, v1: vec2): #Finding out whether the vector is being looked at
     return cross_2d(v0, v1) < 0
 
 def is_on_back(v0: vec2, v1: vec2):

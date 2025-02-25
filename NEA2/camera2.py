@@ -1,4 +1,6 @@
 from settings2 import *
+from data_types2 import vec2
+import glm
 
 class Camera:
     def __init__(self, engine):
@@ -63,10 +65,39 @@ class Camera:
         print(f"Cam Step before move: {self.cam_step}")
         self.move_x(self.cam_step.x)
         self.move_z(self.cam_step.z)
-        self.cam_step *= 0  
+        self.cam_step *= 0
 
-    def move_x(self, dx): self.pos_3d.x += dx; self.target.x += dx
-    def move_z(self, dz): self.pos_3d.z += dz; self.target.z += dz
+    def move_x(self, dx):
+        new_pos = vec3(self.pos_3d.x + dx, self.pos_3d.y, self.pos_3d.z)
+        if not self.check_collision(new_pos):
+            self.pos_3d.x += dx
+            self.target.x += dx
+
+    def move_z(self, dz):
+        new_pos = vec3(self.pos_3d.x, self.pos_3d.y, self.pos_3d.z + dz)
+        if not self.check_collision(new_pos):
+            self.pos_3d.z += dz
+            self.target.z += dz
+
+    def check_collision(self, new_pos):
+        new_pos_2d = vec2(new_pos.x, new_pos.z)
+        for seg in self.engine.level_data.raw_segments:
+            if self.segment_intersects_circle_2d(seg, new_pos_2d, 0.5):  # Adjust radius as needed
+                return True
+        return False
+
+    def segment_intersects_circle_2d(self, segment, circle_center, radius):
+        (x0, y0), (x1, y1) = segment.pos
+        closest_point = self.closest_point_on_segment_2d(vec2(x0, y0), vec2(x1, y1), circle_center)
+        distance = glm.length(closest_point - circle_center)
+        return distance < radius
+
+    def closest_point_on_segment_2d(self, p0, p1, p):
+        p0, p1, p = vec2(p0), vec2(p1), vec2(p)
+        line = p1 - p0
+        t = glm.dot(p - p0, line) / glm.dot(line, line)
+        t = glm.clamp(t, 0.0, 1.0)
+        return p0 + t * line
 
     def update_pos_2d(self):
         self.pos_2d.x, self.pos_2d.y = self.pos_3d.x, self.pos_3d.z

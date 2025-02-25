@@ -4,7 +4,7 @@ import glm
 from glm import vec2, vec3, ivec2, normalize, cross, dot, atan2, sin, cos, length
 
 #resolution
-RES = WIN_WIDTH, WIN_HEIGHT = (1600, 900)
+RES = WIN_WIDTH, WIN_HEIGHT = (2040, 1080)
 
 MAP_OFFSET = 50
 MAP_WIDTH, MAP_HEIGHT = WIN_WIDTH - MAP_OFFSET, WIN_HEIGHT - MAP_OFFSET  # MAP_OFFSET inlined
@@ -24,3 +24,7 @@ FOV_Y_DEG = 50
 # Zero Vectors
 VEC3_ZERO = ray.Vector3(0, 0, 0)
 VEC2_ZERO = ray.Vector2(0, 0)
+
+WHITE_COLOR = ray.Color(255, 255, 255, 255)
+BLACK_COLOR = ray.Color(0, 0, 0, 255)
+DARK_GRAY_COLOR = ray.Color(80, 80, 80, 255)
