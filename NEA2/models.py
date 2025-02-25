@@ -37,7 +37,6 @@ class WallModel:
     def get_model(self):
         mesh = self.get_quad_mesh()
         model = ray.load_model_from_mesh(mesh)
-        model.materials[0].maps[ray.MATERIAL_MAP_DIFFUSE].texture = self.get_texture()
         return model
 
     def get_quad_mesh(self) -> ray.Mesh:
@@ -79,15 +78,5 @@ class WallModel:
         return mesh
     
     def get_wall_height_data(self):
-        bottom, top = 0, 1  # Default values, adjust as needed
+        bottom, top = 0, 4  # Default values, adjust as needed
         return bottom, top
-
-    def get_rnd_col(self):
-        col = *glm.ivec3(glm.abs(glm.ballRand(1.0) * 255)), 255
-        return col
-
-    def get_texture(self):
-        image = ray.gen_image_checked(10, 10, 1, 1, self.get_rnd_col(), WHITE_COLOR)
-        texture = ray.load_texture_from_image(image)
-        ray.unload_image(image)
-        return texture

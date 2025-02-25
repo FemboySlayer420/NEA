@@ -33,7 +33,7 @@ class Engine:
 
     def draw_3d(self):
         ray.begin_mode_3d(self.camera.m_cam)
-        ray.draw_grid(32, 1.0)
+        ray.draw_grid(80, 1.0)
         self.draw_wall_models()  # Draw wall models
         ray.end_mode_3d()
 
