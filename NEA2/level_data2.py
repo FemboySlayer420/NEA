@@ -9,36 +9,13 @@ class LevelData:
 
         self.settings = SETTINGS
 
-        self.sectors = SECTOR_DATA
-        self.sector_boundaries = SEGMENTS_OF_SECTOR_BOUNDARIES
-
-        self.sector = {}
-        self.handle_sectors()
-
-        self.sector_segments = {sector_id: [] for sector_id in self.sector_data}
-
         self.raw_segments = [Segment(p0, p1) for (p0, p1) in MAP_LAYOUT]
         self.raw_segments.extend(self.create_boundary_segments())  # Add boundary segments
-        self.handle_sector_boundaries()
-
-    def handle_sectors(self):
-        for sector_id, sector_data in self.sectors.items():
-            sector = Sector(
-                floor_h=sector_data['floor_h'],
-                ceil_h=sector_data['ceil_h'],
-                floor_tex=sector_data.get('floor_tex_id', 0),
-                ceil_tex=sector_data.get('ceil_tex_id', 0)
-            )
-            self.sectors[sector_id] = sector
 
     def handle_sector_boundaries(self):
         for (p0, p1), sector_ids, textures in self.sector_boundaries:
             seg = self.get_segment(p0, p1, sector_ids, textures)
             self.raw_segments.append(seg)
-
-            for sector_id in sector_ids:
-                if sector_id is not None:
-                    self.sector_segments[sector_id].append([p0, p1])
 
     def get_segment(self, p0, p1, sector_ids, tex_ids):
         seg = Segment(

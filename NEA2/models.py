@@ -5,7 +5,6 @@ from Engine2 import *
 class Models:
     def __init__(self, engine):
         self.engine = engine
-        self.sectors = engine.level_data.sectors
         self.raw_segments = engine.level_data.raw_segments
         self.wall_models: list[ray.Model] = []
         self.wall_id = 0
@@ -14,25 +13,12 @@ class Models:
     def build_wall_models(self):
         for seg in self.raw_segments:
             if seg.back_sector_id is None:
-                #solid wall
+                # solid wall
                 wall = WallModel(self, seg, wall_type='solid')
                 self.add_wall_model(wall, seg)
             else:
-                front_sector = self.sectors[seg.sector_id]
-                back_sector = self.sectors[seg.back_sector_id]
-
-                if abs(front_sector.floor_h - back_sector.floor_h) > EPS:
-                    #p wall low
-                    wall = WallModel(self, seg, wall_type='p_low')
-                    self.add_wall_model(wall, seg)
-
-                if abs(front_sector.ceil_h - back_sector.ceil_h) > EPS:
-                    #p wall high
-                    wall = WallModel(self, seg, wall_type='p_high')
-                    self.add_wall_model(wall, seg)
-                
                 if seg.mid_tex_id is not None:
-                    #p wall mid
+                    # p wall mid
                     wall = WallModel(self, seg, wall_type='p_mid')
                     self.add_wall_model(wall, seg)
 
@@ -45,9 +31,7 @@ class WallModel:
     def __init__(self, engine, segment, wall_type='solid'):
         self.engine = engine
         self.segment = segment
-        self.sectors = self.engine.level_data.sectors
         self.wall_type = wall_type
-        #
         self.model: ray.Model = self.get_model()
 
     def get_model(self):
@@ -95,28 +79,8 @@ class WallModel:
         return mesh
     
     def get_wall_height_data(self):
-        front_sector = self.sectors[self.segment.sector_id]
-
-        if self.wall_type == 'solid':
-            bottom, top = front_sector.floor_h, front_sector.ceil_h
-            return bottom, top
-        
-        back_sector = self.sectors[self.segment.back_sector_id]
-
-        if self.wall_type == 'p_low':
-            bottom, top = front_sector.floor_h, back_sector.floor_h
-
-        elif self.wall_type == 'p_high':
-            bottom, top = front_sector.ceil_h, back_sector.ceil_h
-
-        elif self.wall_type == 'p_mid':
-            bottom, top = (
-                max(front_sector.floor_h, back_sector.floor_h),
-                min(front_sector.ceil_h, back_sector.ceil_h)
-            )
-        bottom, top = min(bottom, top), max(top, bottom)
+        bottom, top = 0, 1  # Default values, adjust as needed
         return bottom, top
-
 
     def get_rnd_col(self):
         col = *glm.ivec3(glm.abs(glm.ballRand(1.0) * 255)), 255

@@ -38,8 +38,8 @@ class Engine:
         ray.end_mode_3d()
 
     def draw_wall_models(self):
-        for model in self.models.wall_models:
-            ray.draw_model(model, (0, 0, 0), 1.0, ray.WHITE)
+        for wall_model in self.models.wall_models:
+            ray.draw_model(wall_model.model, (0, 0, 0), 1.0, ray.WHITE)  # Extract the ray.Model
 
     def draw(self):
         ray.begin_drawing()
