@@ -6,7 +6,7 @@ from bsp_travel import BSPTraversal
 from camera2 import Camera
 from inputs import InputHandler
 from sight_rendering import ViewRenderer
-from models import Models 
+from models import Models
 
 class Engine:
     def __init__(self, app):
@@ -27,19 +27,19 @@ class Engine:
         self.bsp_traverser.update()  # Update BSP traversal after camera and input updates
         self.sight_renderer.update()
 
+        # Update sword position and rotation
+        self.models.update_sword(self.camera)
+
     def draw_2d(self):
         self.map_renderer.draw()  # Draw the map if the flag is set
         ray.draw_fps(10, 10)
 
     def draw_3d(self):
         ray.begin_mode_3d(self.camera.m_cam)
-        ray.draw_grid(80, 1.0)
-        self.draw_wall_models()  # Draw wall models
+        ray.draw_grid(96, 1.0)
+        self.models.draw_wall_models()  # Draw wall models
+        self.models.draw_sword()  # Draw the sword
         ray.end_mode_3d()
-
-    def draw_wall_models(self):
-        for wall_model in self.models.wall_models:
-            ray.draw_model(wall_model.model, (0, 0, 0), 1.0, ray.WHITE)  # Extract the ray.Model
 
     def draw(self):
         ray.begin_drawing()

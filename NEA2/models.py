@@ -1,6 +1,5 @@
 from settings2 import *
 from data_types2 import *
-from Engine2 import *
 
 class Models:
     def __init__(self, engine):
@@ -9,6 +8,11 @@ class Models:
         self.wall_models: list[ray.Model] = []
         self.wall_id = 0
         self.build_wall_models()
+
+        # Load the sword model
+        self.sword_model = ray.load_model("sword.obj")
+        self.sword_position = ray.Vector3(0, 0, 0)
+        self.sword_rotation = ray.Vector3(0, 0, 0)
 
     def build_wall_models(self):
         for seg in self.raw_segments:
@@ -26,6 +30,26 @@ class Models:
         self.wall_models.append(wall_model)
         segment.wall_model_id.add(self.wall_id)
         self.wall_id += 1
+
+    def update_sword(self, camera):
+        # Position the sword relative to the camera
+        self.sword_position = ray.Vector3(
+            camera.pos_3d.x + 0.5,
+            camera.pos_3d.y - 0.5,
+            camera.pos_3d.z
+        )
+        self.sword_rotation = ray.Vector3(
+            camera.yaw,
+            0,
+            0
+        )
+
+    def draw_sword(self):
+        ray.draw_model_ex(self.sword_model, self.sword_position, ray.Vector3(0, 1, 0), self.sword_rotation.y, ray.Vector3(1, 1, 1), ray.WHITE)
+
+    def draw_wall_models(self):
+        for wall_model in self.wall_models:
+            ray.draw_model(wall_model.model, (0, 0, 0), 1.0, ray.WHITE)
 
 class WallModel:
     def __init__(self, engine, segment, wall_type='solid'):
@@ -51,13 +75,8 @@ class WallModel:
         normal = glm.normalize(vec3(-delta.z, delta.y, delta.x))
         normals = glm.array([normal] * vertex_count)
 
-        # get tex coords
-        width = glm.length(delta)
-        bottom, top = self.get_wall_height_data()
-        uv0, uv1, uv2, uv3 = (0, bottom), (width, bottom), (width, top), (0, top)
-        tex_coords = glm.array([glm.vec2(v) for v in [uv0, uv1, uv2, uv3]])
-
         # get vertices
+        bottom, top = self.get_wall_height_data()
         v0, v1, v2, v3 = (x0, bottom, z0), (x1, bottom, z1), (x1, top, z1), (x0, top, z0)
         vertices = glm.array([vec3(v) for v in [v0, v1, v2, v3]])
 
@@ -71,7 +90,6 @@ class WallModel:
         mesh.vertexCount = vertex_count
         mesh.vertices = ray.ffi.from_buffer("float []", vertices)
         mesh.indices = ray.ffi.from_buffer("unsigned short []", indices)
-        mesh.texcoords = ray.ffi.from_buffer("float []", tex_coords)
         mesh.normals = ray.ffi.from_buffer("float []", normals)
 
         ray.upload_mesh(mesh, False)
